@@ -1,0 +1,163 @@
+# ============================================================
+# BASE CONFIG — Default settings for all datasets
+# Dataset-specific configs will override this file
+# Folder structure is fixed to your current project layout:
+# artifacts/, configs/, data/, models/, reports/eda_plots/, src/, notebooks/
+# ============================================================
+
+# ── IO / DATA LOADING ──────────────────────────────────────
+io:
+  chunk_size: 100000
+  sample_size: 50000
+  encoding: "utf-8"
+  sep: ","
+  decimal: "."
+
+# ── INDEXING ───────────────────────────────────────────────
+indexing:
+  add_row_id: true
+  row_id_column: "row_id"
+  primary_key: null
+
+# ── TARGET CONFIG ──────────────────────────────────────────
+target:
+  column: null
+  type: "binary"                 # binary | multiclass | regression
+  positive_classes: []
+  negative_classes: []
+  drop_classes: []
+
+# ── VALIDATION ─────────────────────────────────────────────
+validation:
+  required_columns: []
+  leakage_columns: []
+  max_duplicate_ratio: 0.01
+
+# ── CLEANING ───────────────────────────────────────────────
+cleaning:
+  missing_drop_threshold: 0.60
+  missing_flag_threshold: 0.20
+  numeric_imputation: "median"
+  categorical_imputation: "mode"
+
+  date_columns: []
+  date_format: null
+
+  percentage_columns: []
+
+  string_lower: true
+  string_strip: true
+
+  outlier_method: "winsorize"       # winsorize | clip | iqr | none
+  outlier_lower_quantile: 0.01
+  outlier_upper_quantile: 0.99
+
+  correlation_threshold: 0.95
+
+# ── FEATURE ENGINEERING ────────────────────────────────────
+features:
+  log_transform: []
+  binning: []
+  interaction_features: []
+  one_hot_threshold: 10
+  target_encoding_threshold: 10
+
+# ── FEATURE SELECTION ──────────────────────────────────────
+feature_selection:
+  variance_threshold: 0.01
+  iv_threshold: 0.02
+  woe_bins: 10
+  importance_bottom_percent: 25
+
+# ── DATA SPLITTING ─────────────────────────────────────────
+split:
+  method: "stratified"            # stratified | time | random
+  test_size: 0.20
+  val_size: 0.10
+  random_state: 42
+  time_column: null
+
+# ── MODELING ───────────────────────────────────────────────
+modeling:
+  imbalance_strategy: "class_weight"   # class_weight | smote | none
+  random_state: 42
+  cv_folds: 5
+  primary_metric: "roc_auc"
+
+  lightgbm:
+    n_estimators: 500
+    learning_rate: 0.05
+    num_leaves: 31
+    max_depth: -1
+    min_child_samples: 20
+    subsample: 0.8
+    colsample_bytree: 0.8
+    is_unbalance: true
+    n_jobs: -1
+
+  xgboost:
+    n_estimators: 500
+    learning_rate: 0.05
+    max_depth: 6
+    min_child_weight: 1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    scale_pos_weight: 4
+    n_jobs: -1
+
+  logistic_regression:
+    max_iter: 1000
+    class_weight: "balanced"
+    random_state: 42
+
+# ── HYPERPARAMETER TUNING ──────────────────────────────────
+tuning:
+  framework: "optuna"
+  n_trials: 100
+  timeout: 3600
+  direction: "maximize"
+  metric: "roc_auc"
+
+# ── EVALUATION ─────────────────────────────────────────────
+evaluation:
+  metrics:
+    - roc_auc
+    - recall
+    - precision
+    - f1
+    - brier_score
+  target_auc: 0.70
+  target_recall: 0.65
+  threshold_method: "f1"
+
+# ── EXPLAINABILITY ─────────────────────────────────────────
+explainability:
+  shap_sample: 1000
+  top_n_features: 20
+  top_n_reasons: 3
+
+# ── RISK SCORING ───────────────────────────────────────────
+scoring:
+  calibration: "platt"            # platt | isotonic | none
+  score_min: 0
+  score_max: 100
+  risk_buckets:
+    very_low:  [85, 100]
+    low:       [70, 84]
+    medium:    [50, 69]
+    high:      [30, 49]
+    very_high: [0, 29]
+
+# ── PATHS / ARTIFACTS ──────────────────────────────────────
+paths:
+  raw_data: "data/raw"
+  interim_data: "data/interim"
+  processed_data: "data/processed"
+  features_data: "data/features"
+
+  models: "models"
+
+  reports: "reports"
+  eda_plots: "reports/eda_plots"
+
+  artifacts: "artifacts"

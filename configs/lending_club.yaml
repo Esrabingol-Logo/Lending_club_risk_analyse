@@ -1,0 +1,139 @@
+io:
+  file_path: "data/raw/accepted_2007_to_2018Q4.csv"
+  chunk_size: 100000
+  sample_size: 50000
+  encoding: "utf-8"
+  sep: ","
+  decimal: "."
+
+indexing:
+  add_row_id: true
+  row_id_column: "row_id"
+  primary_key: "id"   # if exists in LC
+
+target:
+  column: "loan_status"
+  type: "binary"
+  positive_classes:
+    - "Charged Off"
+    - "Default"
+  negative_classes:
+    - "Fully Paid"
+  drop_classes:
+    - "Current"
+    - "In Grace Period"
+    - "Late (16-30 days)"
+    - "Late (31-120 days)"
+    - "Does not meet the credit policy. Status:Fully Paid"
+    - "Does not meet the credit policy. Status:Charged Off"
+
+validation:
+  required_columns:
+    - "loan_amnt"
+    - "int_rate"
+    - "annual_inc"
+    - "dti"
+    - "fico_range_low"
+    - "fico_range_high"
+    - "loan_status"
+    - "grade"
+    - "emp_length"
+    - "purpose"
+    - "term"
+
+  leakage_columns:
+    - "total_pymnt"
+    - "total_rec_prncp"
+    - "recoveries"
+    - "total_rec_int"
+    - "total_rec_late_fee"
+    - "last_pymnt_amnt"
+    - "last_pymnt_d"
+    - "next_pymnt_d"
+    - "collection_recovery_fee"
+    - "debt_settlement_flag"
+    - "hardship_flag"
+    - "hardship_status"
+    - "hardship_amount"
+    - "hardship_start_date"
+    - "hardship_end_date"
+    - "out_prncp"
+    - "out_prncp_inv"
+    - "total_pymnt_inv"
+    - "settlement_status"
+    - "settlement_date"
+
+cleaning:
+  missing_drop_threshold: 0.60
+  missing_flag_threshold: 0.20
+  numeric_imputation: "median"
+  categorical_imputation: "mode"
+
+  date_columns:
+    - "issue_d"
+    - "earliest_cr_line"
+  date_format: "%b-%Y"
+
+  percentage_columns:
+    - "int_rate"
+    - "revol_util"
+
+  string_lower: true
+  string_strip: true
+
+  outlier_method: "winsorize"
+  outlier_lower_quantile: 0.01
+  outlier_upper_quantile: 0.99
+
+  correlation_threshold: 0.95
+
+features:
+  log_transform:
+    - "annual_inc"
+    - "revol_bal"
+    - "loan_amnt"
+
+  # Optional: keep these as metadata; code can interpret them
+  custom_formulas:
+    INCOME_TO_LOAN_RATIO: "annual_inc / loan_amnt"
+    DTI_RATIO: "dti / 100"
+    FICO_AVG: "(fico_range_low + fico_range_high) / 2"
+    DTI_INT_INTERACTION: "dti * int_rate"
+    REVOL_UTIL_SQ: "revol_util ** 2"
+    TOTAL_INTEREST_BURDEN: "loan_amnt * int_rate * term_num / 12"
+
+  categorical_grouping:
+    grade:
+      low_risk: ["A", "B"]
+      mid_risk: ["C", "D"]
+      high_risk: ["E", "F", "G"]
+    purpose:
+      debt: ["debt_consolidation", "credit_card"]
+      home: ["home_improvement", "house", "moving"]
+      purchases: ["major_purchase", "car", "vacation", "wedding"]
+      business: ["small_business"]
+      health: ["medical"]
+      other: ["other", "renewable_energy", "educational"]
+
+split:
+  method: "time"
+  time_column: "issue_d"
+  # year-based rule (your code will implement this)
+  test_year: 2018
+  val_year: 2017
+
+modeling:
+  imbalance_strategy: "class_weight"
+  primary_metric: "roc_auc"
+  xgboost:
+    scale_pos_weight: 4
+
+evaluation:
+  target_auc: 0.70
+  target_recall: 0.65
+
+# NOTE: paths are kept in base_config.yaml to match your fixed folders.
+# If you want LC-specific outputs under subfolders WITHOUT changing structure,
+# you can add an optional suffix:
+output:
+  run_subdir: "lending_club"

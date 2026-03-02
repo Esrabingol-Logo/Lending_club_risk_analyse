@@ -1,0 +1,36 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+
+# Virtual Environment
+venv/
+.env/
+
+# =========================
+# Data (VERY IMPORTANT)
+# =========================
+data/raw/
+data/processed/
+data/features/
+
+# Büyük veri dosyaları
+*.csv
+*.parquet
+*.gz
+
+# =========================
+# Artifacts & Models
+# =========================
+artifacts/
+models/
+reports/
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
