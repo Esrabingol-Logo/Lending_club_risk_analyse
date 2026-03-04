@@ -16,10 +16,10 @@ LEAKAGE_DEFAULTS = [
     'collection_recovery_fee', 'debt_settlement_flag',
     'hardship_flag', 'hardship_status', 'out_prncp',
     'out_prncp_inv', 'total_pymnt_inv', 'loan_status',
-    'last_pymnt_d', 'next_pymnt_d'
+    'last_pymnt_d', 'next_pymnt_d',
+    'last_fico_range_low', 'last_fico_range_high',
+    'funded_amnt', 'funded_amnt_inv'
 ]
-
-
 def drop_leakage(df: pd.DataFrame,
                  encoding_json: str = None,
                  ekstra_kolonlar: list = None) -> pd.DataFrame:

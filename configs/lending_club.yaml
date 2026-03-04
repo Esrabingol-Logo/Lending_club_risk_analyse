@@ -60,6 +60,10 @@ validation:
     - "out_prncp"
     - "out_prncp_inv"
     - "total_pymnt_inv"
+    - "last_fico_range_low"
+    - "last_fico_range_high"
+    - "funded_amnt"
+    - "funded_amnt_inv"
     - "settlement_status"
     - "settlement_date"
 
